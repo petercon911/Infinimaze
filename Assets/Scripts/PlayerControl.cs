@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     // Start is called before the first frame update
-    public List<GameObject> mines;
+    public List<GameObject> mines = new List<GameObject>();
     public int HP = 100;
     private int counter;
+    public int mineC;
     void Start()
     {
         
@@ -20,6 +21,7 @@ public class PlayerControl : MonoBehaviour
         {
             PlaceMine();
         }
+        mineC = mines.Count;
     }
 
     public void takeDamage(int damage)
@@ -31,6 +33,7 @@ public class PlayerControl : MonoBehaviour
     public void PickUpMine(GameObject go)
     {
         counter++;
+        GameManager.instance.mineCount++;
         go.transform.position = transform.position + transform.forward + new Vector3(0,counter,0);
         go.transform.parent = transform;
         go.SetActive(false);

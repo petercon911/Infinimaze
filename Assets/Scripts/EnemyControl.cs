@@ -26,7 +26,8 @@ public class EnemyControl : MonoBehaviour
     private Vector3 direction;
     private Vector3 previousGoal;
     private Vector3 lastGoal;
-    public int speed = 30;
+    public int speed = 100;
+    public int hp = 100;
     private bool[,] maze;
     void Start()
     {
@@ -34,7 +35,7 @@ public class EnemyControl : MonoBehaviour
         
 
         home = transform.position;
-        patrolState = true;
+        searchingState = true;
         startSearch = true;
         findPath = true;
         direction = transform.position;
@@ -49,11 +50,11 @@ public class EnemyControl : MonoBehaviour
     {
         lastPos = transform.position;
 
-
+        maze = GameManager.instance.currentMaze;
         home = transform.position;
-        patrolState = true;
+        searchingState = true;
         startSearch = true;
-        direction = transform.position;
+        direction = Vector3.zero;
         Debug.Log(transform.position);
 
         goal = home;
@@ -92,9 +93,10 @@ public class EnemyControl : MonoBehaviour
             else
             {
                 Debug.Log("Before" + Vector3.Distance(transform.position, goal) + transform.position + goal);
-                if (Vector3.Distance(transform.position, goal) < .2f)
+                if (Vector3.Distance(transform.position, goal) < .02f)
                 {
                     directions = new List<Vector3>();
+                    transform.position = goal;
                     for (int i = -1; i <= 1; i++)
                     {
                         for (int j = -1; j <= 1; j++)
@@ -105,7 +107,7 @@ public class EnemyControl : MonoBehaviour
                             Vector3 node = new Vector3(x, 1, z);
                             Debug.Log("patrol" + goal + " " + node);
                             //Debug.Log((GameManager.instance.currentMaze[(int)Math.Round(x, MidpointRounding.ToEven), (int)Math.Round(z, MidpointRounding.ToEven)]) + " " + " " + (x < GameManager.mazeSize) + " " + (x > 0) + " " + (z < GameManager.mazeSize) + " " + (z > 0) + " " + (Math.Abs(i) != Math.Abs(j)));
-                            if (GameManager.instance.currentMaze[(int)Math.Round(x, MidpointRounding.ToEven), (int)Math.Round(z, MidpointRounding.ToEven)]
+                            if (maze[(int)Math.Round(x, MidpointRounding.ToEven), (int)Math.Round(z, MidpointRounding.ToEven)]
                                 && x < GameManager.instance.mazeSize && x > 0 && z < GameManager.instance.mazeSize && z > 0 && Math.Abs(i) != Math.Abs(j))
                                 directions.Add(node);
                         }
@@ -122,7 +124,7 @@ public class EnemyControl : MonoBehaviour
                         lastGoal = goal;
                         goal = directions[UnityEngine.Random.Range(0, directions.Count - 1)];
                     }
-                    else transform.position = home;
+                    else transform.position = GameManager.instance.randomPos(5, GameManager.instance.mazeSize);
 
                     direction = goal - transform.position;
                     direction = direction.normalized * Time.deltaTime;
@@ -146,6 +148,7 @@ public class EnemyControl : MonoBehaviour
             else
             {
                 direction = GameManager.instance.player.transform.position - transform.position;
+                direction = direction.normalized * Time.deltaTime;
                 direction.y = 0;
                 //transform.LookAt(direction);
                 
@@ -172,16 +175,15 @@ public class EnemyControl : MonoBehaviour
                 
                 MoveTowards(GameManager.instance.player.transform.position);
                 direction = goal - transform.position;
-                
+                direction = direction.normalized * Time.deltaTime;
                 direction.y = 0;
                 searchTime += Time.deltaTime; 
             }
             //Debug.Log("search");
         }
-        direction.y = 0;
-        Debug.Log("before addition " + transform.position + (direction.normalized));
-        transform.position += direction;
-        Debug.Log("after addition " + transform.position);
+        Rigidbody rb = GetComponent<Rigidbody>();
+        rb.velocity = (direction).normalized;
+
     }
 
     public void moveToFollow()

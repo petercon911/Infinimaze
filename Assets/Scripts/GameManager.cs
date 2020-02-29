@@ -9,13 +9,16 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public int level = 1;
+    public int mineCount = 0;
 
     public TextMeshProUGUI levelText;
+    public TextMeshProUGUI minesText;
 
     public static GameManager instance;
     public GameObject player;
-    public GameObject mazeMap;
-    public GameObject wall;
+    public GameObject mazeMap, mazemapEmmission;
+    public GameObject wall, wall2;
+    public GameObject elevator;
     
     public GameObject bit;
     private GameObject[] bits = new GameObject[100];
@@ -44,7 +47,8 @@ public class GameManager : MonoBehaviour
     public List<GameObject> mines = new List<GameObject>();
     public Stack<GameObject> floorPieces = new Stack<GameObject>();
     public Stack<GameObject> wallPieces = new Stack<GameObject>();
-    
+    public Stack<GameObject> wallPieces2 = new Stack<GameObject>();
+
     public List<GameObject> enemies = new List<GameObject>();
 
     public GameObject currentExit;
@@ -64,11 +68,11 @@ public class GameManager : MonoBehaviour
    
     public static int MineLayer, PlayerLayer, EnemyLayer, WallLayer;
 
-    private bool levelSwitch = true;
+    private bool finished = false;
 
     void Start()
     {
-
+        finished = false;
         print("hello");
         var random = new UnityEngine.Random();
         instance = this;
@@ -148,20 +152,26 @@ public class GameManager : MonoBehaviour
         else
             placeExit(directionMazeSize);
 
-        PlaceItems(mazeSize, 4);
+        PlaceItems(mazeSize, 2);
 
-        PlaceEnemy(1, enemy1, ref enemy1Stack, mazeSize);
+        PlaceEnemy(mazeSize/10, enemy1, ref enemy1Stack, mazeSize);
         PlaceEnemy(mazeSize / 10, enemyCam, ref enemyCamStack, mazeSize);
 
         nextFloorY = 6;
 
         player.SetActive(true);
+
+        finished = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        levelText.text = "Level: " + nextFloorY + NextDirection + mazeSize+ directionMazeSize+ nextDirectionMazeSize;
+        if (finished)
+        {
+            levelText.text = "Level: " + level;
+            minesText.text = "Mines: " + mineCount;
+        }
     }
 
     public void prepareNewLevel()
@@ -199,7 +209,7 @@ public class GameManager : MonoBehaviour
         directionMazeSize = nextDirectionMazeSize;
         nextDirectionMazeSize = UnityEngine.Random.Range(4, 8) * 10;
         
-        PlaceItems(mazeSize, nextFloorY + 6);
+        PlaceItems(mazeSize, nextFloorY + 2);
         PlaceEnemy(mazeSize / 10, enemy1, ref enemy1Stack, mazeSize);
         PlaceEnemy(mazeSize / 10, enemyCam, ref enemyCamStack, mazeSize);
 
@@ -375,7 +385,7 @@ public class GameManager : MonoBehaviour
 
     void RunPrim(int y, ref bool[,] maze, ref GameObject[,] walls, int mazeS)
     {
-        if(wallPieces.Count<mazeS*mazeS)
+        if(wallPieces.Count<mazeS*mazeS && wallPieces2.Count<mazeS*4)
             fillStacks(mazeS);
 
         walls = new GameObject[mazeS, mazeS];
@@ -391,7 +401,10 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        cellularExplorer(ref maze, y%10);
+        for (int i = 0; i < (40 * level)%140; i++)
+        {
+            //cellularExplorer(ref maze, y % 10, mazeS);
+        }
 
         for (int i = 0; i < mazeS; i++)
         {
@@ -399,8 +412,11 @@ public class GameManager : MonoBehaviour
             {
                 if (maze[i, j] == false)
                 {
-
-                    var temp = wallPieces.Pop();
+                    GameObject temp;
+                    if (i == 0 || j == 0 || i == mazeS - 1 || j == mazeS - 1)
+                        temp = wallPieces2.Pop();
+                    else
+                        temp = wallPieces.Pop();
                     temp.SetActive(true);
                     temp.transform.position = new Vector3(i, y + 3, j);
                     
@@ -447,6 +463,7 @@ public class GameManager : MonoBehaviour
                         floor[i, j].SetActive(false);
                         floor[i, j].GetComponent<floorControl>().Reset();
                         floor[i, j].transform.position = new Vector3(-100, -100, -100);
+                        //floor[i, j].GetComponent<floorControl>().light.SetActive(false);
                         floorPieces.Push(floor[i, j]);
                     }
                 }
@@ -466,7 +483,10 @@ public class GameManager : MonoBehaviour
                     {
                         walls[i, j].SetActive(false);
                         walls[i, j].GetComponent<WallControl>().minimapCube.SetActive(false);
-                        wallPieces.Push(walls[i, j]);
+                        if(walls[i,j].gameObject== wall)
+                            wallPieces.Push(walls[i, j]);
+                        if(walls[i, j].gameObject == wall2)
+                            wallPieces2.Push(walls[i, j]);
                     }
                 }
             }
@@ -477,7 +497,9 @@ public class GameManager : MonoBehaviour
     {
         while (floorPieces.Count < (mazeS / 5) * (mazeS / 5))
         {
-            var temp = Instantiate(Instantiate(mazeMap, new Vector3(-100, -100, -100), Quaternion.identity));
+            GameObject temp = null;
+            temp = Instantiate(Instantiate(mazeMap, new Vector3(-100, -100, -100), Quaternion.identity));
+            
             temp.SetActive(false);
             floorPieces.Push(temp);
         }
@@ -487,6 +509,13 @@ public class GameManager : MonoBehaviour
             var temp = Instantiate(Instantiate(wall, new Vector3(-100, -100, -100), Quaternion.identity));
             temp.SetActive(false);
             wallPieces.Push(temp);
+        }
+
+        while (wallPieces2.Count < mazeS * 8)
+        {
+            var temp = Instantiate(Instantiate(wall2, new Vector3(-100, -100, -100), Quaternion.identity));
+            temp.SetActive(false);
+            wallPieces2.Push(temp);
         }
     }
 
@@ -508,6 +537,8 @@ public class GameManager : MonoBehaviour
                     temp.GetComponent<floorControl>().starty = new Vector3(i, y, j);
                     temp.SetActive(true);
                     temp.transform.position = new Vector3(i, y, j);
+                    //if(i +j == 10 || i + j == mazeS-5 + mazeS-5 || i+j == mazeS/2 + mazeS/2)
+                        //temp.GetComponent<floorControl>().light.SetActive(true);
                     floor[(i / 5) - 1 - counterx, (j / 5) - 1 - countery] = temp;
                     Debug.Log("position" + temp.transform.position);
                 }
@@ -627,6 +658,7 @@ public class GameManager : MonoBehaviour
 
     public void placeExit(int mazeS)
     {
+        Destroy(currentFloor[currentE.Item1, currentE.Item2].GetComponent<floorControl>().elevatorSwitch);
         List<(int, int)> choices = new List<(int, int)>();
         for (int i = 0; i < (mazeS / 10); i++)
         {
@@ -661,7 +693,12 @@ public class GameManager : MonoBehaviour
             currentFloor[randomChoice.Item1, randomChoice.Item2].GetComponent<floorControl>().starty = currentFloor[randomChoice.Item1, randomChoice.Item2].transform.position;
             currentFloor[randomChoice.Item1, randomChoice.Item2].GetComponent<floorControl>().elevator = true;
             currentCeiling[randomChoice.Item1, randomChoice.Item2].SetActive(false);
-            
+
+            GameObject switc = Instantiate(elevator, new Vector3(-100, -100, -100), Quaternion.identity);
+            switc.transform.parent = currentFloor[randomChoice.Item1, randomChoice.Item2].transform;
+            switc.transform.localPosition = new Vector3(0, 1, 0);
+            currentFloor[randomChoice.Item1, randomChoice.Item2].GetComponent<floorControl>().elevatorSwitch = switc;
+
             removeWalls(ref currentMaze, ref currentWalls, mazeSize);
             removeWalls(ref nextMaze, ref nextWalls, directionMazeSize);
             Debug.Log("randomChoice " + currentExit.transform.position);
@@ -710,13 +747,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void cellularExplorer(ref bool[,] maze, int offset)
+    public void cellularExplorer(ref bool[,] maze, int offset, int mazeS)
     {
         int lifetime = 0;
 
-        for (int i = 1; i < mazeSize - 1; i++) 
+        for (int i = 1; i < mazeS - 1; i++) 
         {
-            for (int j = 1; j < mazeSize - 1; j++)
+            for (int j = 1; j < mazeS - 1; j++)
             {
                 int neighbours = 0;
                 for (int k = -1; k <= 1; k++)
@@ -724,13 +761,18 @@ public class GameManager : MonoBehaviour
                     for (int l = -1; l <= 1; l++)
                     {
                         if (k + i >= 0 && l + j >= 0
-                                && k + i < mazeSize && l + j < mazeSize && Math.Abs(k) != Math.Abs(l))
+                                && k + i < mazeS && l + j < mazeS && Math.Abs(k) != Math.Abs(l))
                         {
                             if (maze[i + k, j + l]) neighbours++;
                         }
                     }
                 }
-                if (neighbours > 2 && UnityEngine.Random.Range(0,10) > 5) maze[i, j] = true;
+                if (neighbours > 2 && UnityEngine.Random.Range(0,100) > 98) maze[i, j] = true;
+                if (neighbours < 2 && !maze[i,j] && UnityEngine.Random.Range(0, 100) > 98) maze[i, j] = true;
+                if ((neighbours > 8) && maze[i, j] && UnityEngine.Random.Range(0, 100) > 88) maze[i, j] = true;
+                if (neighbours == 4 && !maze[i, j] && UnityEngine.Random.Range(0, 100) > 88) maze[i, j] = true;
+
+
             }
         }
     }
@@ -777,7 +819,7 @@ public class GameManager : MonoBehaviour
             temp.SetActive(false);
             enemyStack.Push(temp);
         }
-        for (int i = 0; i < num; i++)
+        for (int i = 0; i < num%20; i++)
         {
 
             var tempPos = randomPos(i, mazeS);
@@ -841,7 +883,7 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
-                if (neighbours <2 && UnityEngine.Random.Range(0,100) > 97)
+                if (neighbours <2 && UnityEngine.Random.Range(0,100) > 97 && currentMaze[x,y])
                 {
                     mines[counter].transform.position = new Vector3(x, yPos, y);
                     mines[counter].SetActive(true);

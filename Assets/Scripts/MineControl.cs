@@ -48,7 +48,7 @@ public class MineControl : MonoBehaviour
         }
 
         transform.position += velocity;
-        if (Vector3.Distance(startLoc, transform.position) > 1) velocity = -velocity;
+        if (Vector3.Distance(startLoc, transform.position) > .25) velocity = -velocity;
     }
 
     void toggleLight()
@@ -64,7 +64,7 @@ public class MineControl : MonoBehaviour
     {
         //light.color = new Color(2, 2, 2);
         if (!activateMine)
-            if (other.gameObject.layer == GameManager.PlayerLayer && Vector3.Distance(other.transform.position, transform.position) < 3)
+            if (other.gameObject.layer == GameManager.PlayerLayer && Vector3.Distance(other.transform.position, transform.position) < 1)
             {
                 Debug.Log("HElp");
                 if(GameManager.instance.player!=null)
@@ -76,9 +76,19 @@ public class MineControl : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if (activateMine)
+        {
             if (other.gameObject.layer == GameManager.WallLayer)
                 wallZone.Push(other.gameObject);
-
+        }
+        else if (!activateMine)
+        {
+            if (other.gameObject.layer == GameManager.PlayerLayer && Vector3.Distance(other.transform.position, transform.position) < 1)
+            {
+                Debug.Log("HElp");
+                if (GameManager.instance.player != null)
+                    GameManager.instance.player.GetComponent<PlayerControl>().PickUpMine(this.gameObject);
+            }
+        }
     }
 
     public void activate()

@@ -11,7 +11,8 @@ public class floorControl : MonoBehaviour
 
     public Rigidbody rigid;
     public BoxCollider box;
-    
+    public GameObject elevatorSwitch;
+    public GameObject light;
 
     public Vector3 starty;
     private bool journeyComplete = false;
@@ -34,6 +35,7 @@ public class floorControl : MonoBehaviour
                 GameManager.instance.prepareNewLevel();
                 Debug.Log("zzz");
                 elevator = false;
+                Destroy(elevatorSwitch);
                 //Debug.Log("XXX");
             }
 
