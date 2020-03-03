@@ -37,7 +37,6 @@ ScriptsOnlyBuild:
     - TMPro.TextMeshProUGUI
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
-    - UnityEditor.TestTools.TestRunner.TestListCacheData
     UnityEngine.UI.dll:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
@@ -134,7 +133,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 12334}
     - Class: 114
-      Script: {instanceID: 17856}
+      Script: {instanceID: 17918}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 124
@@ -1593,4 +1592,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: C:/Users/Cu/Games Fleadh/Build2/Games Fleadh.exe
+  playerPath: C:/Users/Cu/Games Fleadh/Build3/Games Fleadh.exe
