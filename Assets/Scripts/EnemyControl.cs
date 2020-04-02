@@ -352,22 +352,22 @@ public class EnemyControl : MonoBehaviour
 
         
         //Debug.Log("HEY : " + target.compareTo(currentNode));
-        while (!target.compareTo(currentNode) && openList.Count > 0)
-        {
-
+        while (!target.compareTo(currentNode) && openList.Count > 0) 
+        {  // if current node is our taget, then there is a path
+           // if openlist is empty then there is no path
             
             currentNode = openList[0];
             for (int i = 1; i < openList.Count; i++)
-            {
-                if ((openList[i].f) < (currentNode.f))
+            {   
+                if ((openList[i].f) < (currentNode.f)) // 
                 {
                     currentNode = openList[i];
-                }
+                } // current node is the lowest f value node in openlist
             }
             openList.Remove(currentNode);
             closedList.Add(currentNode);
-            maze[currentNode.x, currentNode.y] = false;
-            
+            maze[currentNode.x, currentNode.y] = false; 
+            // maze[,] contains unwalkable and already closed nodes
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
@@ -382,17 +382,14 @@ public class EnemyControl : MonoBehaviour
                             g = currentNode.g + 1; // from 0,0
                             h = ((t.x - (currentNode.x + i)) ^ 2) + ((t.y - (currentNode.y + j)) ^ 2);
 
-                            
-
                             node = new ANode(currentNode.x + i, currentNode.y + j, g, h, null);
-
+                            // node here is the neighbour node of the current node
                             if (!customContains(node, openList))
                             {
                                 node.parent = currentNode;
                                 openList.Add(node);
-                            }
-
-                            
+                            } // if neighbour is not in open list, set parent to current node and add
+                              // to open list
 
                             else
                             {
@@ -401,8 +398,8 @@ public class EnemyControl : MonoBehaviour
                                     if (node.g > openList[k].g) better = false;
                                 }
                                 if (better) node.parent = currentNode;
-                            }
-                           
+                            } // looking for a better g value for the parent of the neighbour if it is not
+                              // in open list
                         }
                         
                     }

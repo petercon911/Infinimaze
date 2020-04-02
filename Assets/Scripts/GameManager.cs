@@ -403,7 +403,7 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < (40 * level)%140; i++)
         {
-            //cellularExplorer(ref maze, y % 10, mazeS);
+            cellularExplorer(ref maze, y % 10, mazeS);
         }
 
         for (int i = 0; i < mazeS; i++)
@@ -585,8 +585,8 @@ public class GameManager : MonoBehaviour
             {
                 //Debug.Log("X");
                 if ((currentCell.Item1 + i) >= 0 && (currentCell.Item2 + j) >= 0
-                    && (currentCell.Item1 + i) < mazeS && (currentCell.Item2 + j) < mazeS
-                    && Math.Abs(i) != Math.Abs(j))
+                    && (currentCell.Item1 + i) < mazeS && (currentCell.Item2 + j) < mazeS 
+                    && Math.Abs(i) != Math.Abs(j)) //check that the cell is in bounds and that diagonal neighbours are left alone
                 {
                     
                     if (!mazeChecked[(currentCell.Item1 + i), (currentCell.Item2 + j)])

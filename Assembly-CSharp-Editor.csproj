@@ -63,11 +63,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ProCore\ProBuilder\About\Editor\pb_AboutWindow.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\About\Editor\pb_UpdateAvailable.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\About\Editor\pb_UpdateCheck.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\About\Editor\pb_VersionInfo.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\About\Editor\pb_VersionUtil.cs" />
     <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\ClearUnusedAttributes.cs" />
     <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\CreateShadowObject.cs" />
     <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\CustomAction.cs" />
