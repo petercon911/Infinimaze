@@ -63,12 +63,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\ClearUnusedAttributes.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\CreateShadowObject.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\CustomAction.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\EditorCallbackViewer.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\RenameNewObjects.cs" />
-    <Compile Include="Assets\ProCore\ProBuilder\API Examples\Editor\SetCustomUnwrapParams.cs" />
     <Compile Include="Assets\ProCore\ProBuilder\Editor\Addons\pb_Fbx.cs" />
     <Compile Include="Assets\ProCore\ProBuilder\Editor\MenuItems\Actions\pb_ExportObj.cs" />
     <Compile Include="Assets\ProCore\ProBuilder\Editor\MenuItems\Actions\pb_GenerateUV2.cs" />

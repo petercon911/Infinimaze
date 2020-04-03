@@ -586,7 +586,7 @@ public class GameManager : MonoBehaviour
                 //Debug.Log("X");
                 if ((currentCell.Item1 + i) >= 0 && (currentCell.Item2 + j) >= 0
                     && (currentCell.Item1 + i) < mazeS && (currentCell.Item2 + j) < mazeS 
-                    && Math.Abs(i) != Math.Abs(j)) //check that the cell is in bounds and that diagonal neighbours are left alone
+                    && Math.Abs(i) != Math.Abs(j)) //check that the cell is in bounds and that diagonal neighbours are left alone2
                 {
                     
                     if (!mazeChecked[(currentCell.Item1 + i), (currentCell.Item2 + j)])

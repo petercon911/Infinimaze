@@ -141,7 +141,7 @@ public class EnemyControl : MonoBehaviour
 
         if (followingState)
         {
-            if (seenTimer>10)
+            if (seenTimer>3)
             {
                 moveToSearch();
             }
